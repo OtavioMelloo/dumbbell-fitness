@@ -26,8 +26,8 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body
-        className={`${bebas_neue.variable} ${roboto.variable} antialiased`}>
-        {children}
+        className={`${bebas_neue.variable} ${roboto.variable} antialiased flex w-full h-screen bg-grayp justify-center`}>
+        {children} 
       </body>
     </html>
   );
