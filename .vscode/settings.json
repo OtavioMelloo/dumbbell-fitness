@@ -1,4 +1,10 @@
 {
-    "files.autoSave": "off",
-    "explorer.compactFolders": false
+    "files.autoSave": "afterDelay",
+    "explorer.compactFolders": false,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    }
 }
