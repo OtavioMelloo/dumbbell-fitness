@@ -1,9 +1,17 @@
-import React from 'react'
+import React from "react";
+import Image from "next/image";
 
-const carrossel = () => {
+const Carrossel = () => {
   return (
-    <div>carrossel</div>
-  )
-}
+    <div className="relative w-full h-[400px]">
+      <Image
+        src="/img/carrossel1.svg"
+        alt="Imagem carrossel 1"
+        fill
+        className="object-cover"
+      />
+    </div>
+  );
+};
 
-export default carrossel
+export default Carrossel;

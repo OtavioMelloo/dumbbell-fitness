@@ -27,4 +27,15 @@
 
   --font-bebas: 'Bebas_Neue';
   --font-roboto: 'Roboto';
+
+
+  /* border radius */
+
+  --radius-4: 0.25rem;
+  --radius-8: 0.5rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-20: 1.25rem;
+  --radius-24: 1.5rem;
+
 }
