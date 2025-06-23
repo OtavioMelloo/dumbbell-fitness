@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
+import { User } from "lucide-react";
 
 /**
  * Componente Header (Cabeçalho)
@@ -8,6 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
  * Cabeçalho principal da aplicação contendo:
  * - Logo da academia (DUMBBELL FITNESS)
  * - Menu de navegação com links principais (apenas na página inicial)
+ * - Botão de perfil (apenas quando logado)
  * - Botão de voltar para home (nas áreas privadas e de auth)
  * - Estilização consistente com o design system
  * - Navegação inteligente baseada na página atual
@@ -58,6 +60,11 @@ function Header() {
     router.push("/");
   };
 
+  // Função para navegar para perfil
+  const navigateToProfile = () => {
+    router.push("/appdumbbell/perfil");
+  };
+
   // Verifica se está na área privada
   const isPrivateArea =
     pathname.startsWith("/appdumbbell") || pathname.startsWith("/rotinas");
@@ -66,24 +73,28 @@ function Header() {
     pathname.startsWith("/login") || pathname.startsWith("/registro");
   // Verifica se está na página inicial
   const isHomePage = pathname === "/";
+  // Verifica se está na página sobre
+  const isSobrePage = pathname === "/sobre";
   // Verifica se está na página de login
   const isLoginPage = pathname.startsWith("/login");
   // Verifica se está na página de registro
   const isRegistroPage = pathname.startsWith("/registro");
 
   return (
-    <header className="bg-gray1 rounded-24 mt-2 p-4 flex justify-between w-full text-white bg-dumbCinza h-[100px] mb-4">
+    <header className="bg-gray1 rounded-24 mt-2 p-4 flex justify-between items-center w-full text-white bg-dumbCinza h-[100px] mb-4">
       {/* Logo da academia - clicável para voltar ao home */}
       <div
-        className="logoLetra cursor-pointer hover:opacity-80 transition-opacity duration-200"
+        className="logoLetra cursor-pointer hover:opacity-80 transition-opacity duration-200 flex flex-col items-start"
         onClick={navigateToHome}
       >
-        <h2 className="font-bebas text-5xl mb-[-10px]">DUMBELL</h2>
-        <h3 className="font-roboto font-light text-2xl">FITNESS</h3>
+        <h2 className="font-bebas text-5xl mb-[-10px] leading-none">DUMBELL</h2>
+        <h3 className="font-roboto font-light text-2xl leading-none">
+          FITNESS
+        </h3>
       </div>
 
-      {/* Menu de navegação - apenas na página inicial */}
-      {isHomePage && (
+      {/* Menu de navegação - apenas na página inicial e sobre */}
+      {(isHomePage || isSobrePage) && (
         <div className="w-[624px] h-[60px] flex items-center justify-between">
           <ul className="w-full text-roboto font-bold flex justify-between gap-4 p-4 text-[20px]">
             <li
@@ -100,7 +111,7 @@ function Header() {
             </li>
             <li
               className="cursor-pointer hover:text-primary-green transition-colors duration-200"
-              onClick={() => scrollToSection("sobre")}
+              onClick={() => router.push("/sobre")}
             >
               SOBRE
             </li>
@@ -140,6 +151,15 @@ function Header() {
       {/* Botões para área privada */}
       {isPrivateArea && (
         <div className="flex items-center gap-6">
+          {/* Botão de perfil */}
+          <button
+            onClick={navigateToProfile}
+            className="w-12 h-12 bg-primary-green rounded-full flex items-center justify-center hover:bg-green-600 transition-colors duration-200"
+            title="Meu Perfil"
+          >
+            <User size={24} className="text-white" />
+          </button>
+
           {/* Botão de voltar para home */}
           <button
             className="text-roboto font-bold text-[18px] cursor-pointer hover:text-primary-green transition-colors duration-200"
