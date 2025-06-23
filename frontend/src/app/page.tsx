@@ -26,11 +26,16 @@ export default function Home() {
         <Carrossel />
 
         {/* Seção de modalidades esportivas */}
-        <Modalidades />
+        <div id="modalidades">
+          <Modalidades />
+        </div>
       </div>
 
       {/* Seção de planos com fundo diferente */}
-      <div className="w-full flex items-center justify-center bg-gray1 py-[15px] mt-[40px]">
+      <div
+        id="planos"
+        className="w-full flex items-center justify-center bg-gray1 py-[15px] mt-[40px]"
+      >
         <div className="w-[1250px] flex flex-col items-center justify-center">
           {/* Título da seção de planos */}
           <h1 className="text-white text-6xl font-bebas p-5">PLANOS</h1>

@@ -16,7 +16,7 @@ import RotinaModal from "./RotinaModal";
  * - Histórico de treinos
  * - Progresso do usuário
  */
-const page = () => {
+const Page = () => {
   const [showModal, setShowModal] = useState(false);
 
   const handleSave = () => {
@@ -39,4 +39,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

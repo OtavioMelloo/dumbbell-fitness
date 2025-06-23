@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   PlanoProps,
@@ -9,6 +8,7 @@ import {
   convertPlanosFromAPI,
 } from "@/data/plano";
 import { enviarDadosCartao } from "@/services/api";
+import Header from "@/components/header";
 
 /**
  * Opções de bandeiras de cartão disponíveis
@@ -191,85 +191,85 @@ const CheckoutPage = () => {
   // Renderiza loading enquanto busca dados
   if (isLoading) {
     return (
-      <div className="bg-gray min-h-screen flex items-center justify-center">
-        <div className="text-white text-xl">Carregando dados do plano...</div>
+      <div className="bg-gray min-h-screen flex flex-col items-center">
+        <div className="w-[1250px]">
+          <Header />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-white text-xl">Carregando dados do plano...</div>
+        </div>
       </div>
     );
   }
 
   // Renderiza erro se houver problema
-  if (error || !planoSelecionado) {
+  if (error) {
     return (
-      <div className="bg-gray min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-400 text-xl mb-4">
-            {error || "Plano não encontrado"}
-          </div>
-          <button
-            onClick={() => router.push("/matricula")}
-            className="text-primary-green underline"
-          >
-            Voltar para planos
-          </button>
+      <div className="bg-gray min-h-screen flex flex-col items-center">
+        <div className="w-[1250px]">
+          <Header />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-white text-xl">{error}</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray min-h-screen flex items-center justify-center p-4">
-      <div className="w-[1250px] bg-gray1 rounded-24 p-8">
-        <h1 className="text-white text-4xl font-bebas text-center mb-8">
-          CHECKOUT
-        </h1>
+    <div className="bg-gray min-h-screen flex flex-col items-center">
+      {/* Header de navegação */}
+      <div className="w-[1250px]">
+        <Header />
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Coluna Esquerda - Formulário de Pagamento */}
-          <div className="bg-black rounded-16 p-6">
-            <h2 className="text-white text-2xl font-bebas mb-6">
-              Dados do Cartão
-            </h2>
+      {/* Conteúdo principal */}
+      <div className="w-[1250px] flex-1 flex gap-8 p-6">
+        {/* Coluna esquerda - Formulário de pagamento */}
+        <div className="flex-1 bg-gray1 rounded-24 p-8">
+          <h2 className="text-white text-3xl font-bebas mb-6">
+            Dados do Cartão
+          </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Número do Cartão */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Número do cartão */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-2">
+                Número do Cartão
+              </label>
+              <input
+                type="text"
+                value={numeroCartao}
+                onChange={(e) =>
+                  setNumeroCartao(formatarNumeroCartao(e.target.value))
+                }
+                placeholder="0000 0000 0000 0000"
+                maxLength={19}
+                className="w-full px-4 py-3 bg-gray2 text-white rounded-12 border border-gray3 focus:border-primary-green focus:outline-none"
+                required
+              />
+            </div>
+
+            {/* Nome no cartão */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-2">
+                Nome no Cartão
+              </label>
+              <input
+                type="text"
+                value={nomeCartao}
+                onChange={(e) => setNomeCartao(e.target.value.toUpperCase())}
+                placeholder="NOME COMO ESTÁ NO CARTÃO"
+                className="w-full px-4 py-3 bg-gray2 text-white rounded-12 border border-gray3 focus:border-primary-green focus:outline-none"
+                required
+              />
+            </div>
+
+            {/* Validade e CVV */}
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-white text-sm font-medium mb-2">
-                  Número do Cartão
-                </label>
-                <input
-                  type="text"
-                  value={numeroCartao}
-                  onChange={(e) =>
-                    setNumeroCartao(formatarNumeroCartao(e.target.value))
-                  }
-                  placeholder="0000 0000 0000 0000"
-                  maxLength={19}
-                  className="w-full px-3 py-2 border border-primary-green rounded-12 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-green"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Nome no Cartão */}
-              <div>
-                <label className="block text-white text-sm font-medium mb-2">
-                  Nome no Cartão
-                </label>
-                <input
-                  type="text"
-                  value={nomeCartao}
-                  onChange={(e) => setNomeCartao(e.target.value.toUpperCase())}
-                  placeholder="NOME COMO ESTÁ NO CARTÃO"
-                  className="w-full px-3 py-2 border border-primary-green rounded-12 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-green"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Data de Validade (AAAA/MM) */}
-              <div>
-                <label className="block text-white text-sm font-medium mb-2">
-                  Data de Validade (AAAA/MM)
+                  Validade (AAAA/MM)
                 </label>
                 <input
                   type="text"
@@ -279,13 +279,10 @@ const CheckoutPage = () => {
                   }
                   placeholder="2025/12"
                   maxLength={7}
-                  className="w-full px-3 py-2 border border-primary-green rounded-12 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-green"
+                  className="w-full px-4 py-3 bg-gray2 text-white rounded-12 border border-gray3 focus:border-primary-green focus:outline-none"
                   required
-                  disabled={isSubmitting}
                 />
               </div>
-
-              {/* CVV */}
               <div>
                 <label className="block text-white text-sm font-medium mb-2">
                   CVV
@@ -298,101 +295,85 @@ const CheckoutPage = () => {
                   }
                   placeholder="123"
                   maxLength={4}
-                  className="w-full px-3 py-2 border border-primary-green rounded-12 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-green"
+                  className="w-full px-4 py-3 bg-gray2 text-white rounded-12 border border-gray3 focus:border-primary-green focus:outline-none"
                   required
-                  disabled={isSubmitting}
                 />
               </div>
+            </div>
 
-              {/* Bandeira do Cartão */}
-              <div>
-                <label className="block text-white text-sm font-medium mb-2">
-                  Bandeira do Cartão
-                </label>
-                <select
-                  value={bandeira}
-                  onChange={(e) => setBandeira(e.target.value)}
-                  className="w-full px-3 py-2 border border-primary-green rounded-12 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-primary-green"
-                  required
-                  disabled={isSubmitting}
-                >
-                  <option value="" className="bg-black text-white">
-                    Selecione a bandeira
-                  </option>
-                  {BANDEIRAS_CARTAO.map((bandeiraOption) => (
-                    <option
-                      key={bandeiraOption.value}
-                      value={bandeiraOption.value}
-                      className="bg-black text-white"
-                    >
-                      {bandeiraOption.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Botão de Pagamento */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full font-bold py-3 px-4 rounded-12 transition-colors mt-6 ${
-                  isSubmitting
-                    ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-                    : "bg-primary-green text-black hover:bg-primary-light-green"
-                }`}
+            {/* Bandeira */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-2">
+                Bandeira
+              </label>
+              <select
+                value={bandeira}
+                onChange={(e) => setBandeira(e.target.value)}
+                className="w-full px-4 py-3 bg-gray2 text-white rounded-12 border border-gray3 focus:border-primary-green focus:outline-none"
+                required
               >
-                {isSubmitting ? "PROCESSANDO..." : "FINALIZAR PAGAMENTO"}
-              </button>
-            </form>
-          </div>
-
-          {/* Coluna Direita - Detalhes do Plano */}
-          <div className="bg-black rounded-16 p-6">
-            <h2 className="text-white text-2xl font-bebas mb-6">
-              Resumo do Plano
-            </h2>
-
-            {/* Informações do Plano */}
-            <div className="mb-6">
-              <h3 className="text-primary-green text-3xl font-bebas mb-2">
-                {planoSelecionado.titulo}
-              </h3>
-              <p className="text-white text-4xl font-bebas">
-                R$ {planoSelecionado.preco.toFixed(2)}
-              </p>
+                <option value="">Selecione a bandeira</option>
+                {BANDEIRAS_CARTAO.map((bandeira) => (
+                  <option key={bandeira.value} value={bandeira.value}>
+                    {bandeira.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Lista de Benefícios */}
-            <div className="space-y-3">
-              <h4 className="text-white text-lg font-medium mb-4">
-                Benefícios Inclusos:
-              </h4>
-              {planoSelecionado.beneficios.map((beneficio, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  {/* Ícone de verificação */}
-                  <Image
-                    src="/img/icon/iconverificacao.svg"
-                    alt="Verificado"
-                    width={20}
-                    height={20}
-                    className="flex-shrink-0"
-                  />
-                  {/* Texto do benefício */}
-                  <span className="text-white text-sm">{beneficio}</span>
-                </div>
-              ))}
-            </div>
+            {/* Mensagem de erro */}
+            {error && (
+              <div className="text-error text-sm bg-red-900/20 p-3 rounded-12 border border-error">
+                {error}
+              </div>
+            )}
 
-            {/* Total */}
-            <div className="border-t border-gray-600 mt-6 pt-6">
-              <div className="flex justify-between items-center">
-                <span className="text-white text-lg font-medium">Total:</span>
-                <span className="text-primary-green text-2xl font-bebas">
-                  R$ {planoSelecionado.preco.toFixed(2)}
-                </span>
+            {/* Botão de pagamento */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary-green text-gray1 font-bold py-4 px-6 rounded-12 hover:bg-primary-light-green transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Processando..." : "Finalizar Pagamento"}
+            </button>
+          </form>
+        </div>
+
+        {/* Coluna direita - Detalhes do plano */}
+        <div className="w-80 bg-gray1 rounded-24 p-8">
+          <h3 className="text-white text-2xl font-bebas mb-6">
+            Resumo do Plano
+          </h3>
+
+          {planoSelecionado && (
+            <div className="space-y-4">
+              <div className="bg-gray2 rounded-16 p-4">
+                <h4 className="text-white text-xl font-bold mb-2">
+                  {planoSelecionado.titulo}
+                </h4>
+                <p className="text-primary-green text-2xl font-bold">
+                  R$ {planoSelecionado.preco}
+                </p>
+              </div>
+
+              <div>
+                <h5 className="text-white font-bold mb-3">
+                  Benefícios Inclusos:
+                </h5>
+                <ul className="space-y-2">
+                  {planoSelecionado.beneficios.map((beneficio, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center text-white text-sm"
+                    >
+                      <span className="text-primary-green mr-2">✓</span>
+                      {beneficio}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
