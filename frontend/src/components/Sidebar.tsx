@@ -29,7 +29,7 @@ const Sidebar = () => {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <aside className="bg-gray1 h-screen w-[285px] p-4 flex flex-col justify-between">
+    <aside className="bg-gray1 fixed h-screen w-[285px] p-4 flex flex-col justify-between">
       <div className="w-full flex flex-col">
         <h2 className="text-primary-green font-bebas text-[32px] mb-8 flex flex-col items-center">
           DUMBELL FITNESS
@@ -52,11 +52,6 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="text-white flex items-center gap-2">
-        <User size={22} />
-        <span>user</span>
       </div>
     </aside>
   );

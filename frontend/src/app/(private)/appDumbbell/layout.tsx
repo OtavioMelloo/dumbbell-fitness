@@ -14,7 +14,9 @@ export default function RotinasLayout({
     <div className="font-sans bg-grayp text-white w-full min-h-screen antialiased">
       <div className="flex w-full min-h-screen">
         <Sidebar />
-        <main className="flex-1 h-full p-6 overflow-y-auto">{children}</main>
+        <main className="flex-1 ml-[285px] h-full p-6 overflow-y-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
