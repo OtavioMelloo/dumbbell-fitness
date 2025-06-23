@@ -80,7 +80,7 @@ const Register = () => {
         />
       </div>
 
-      <ButtonLogin type="submit">Cadastrar</ButtonLogin>
+      <ButtonLogin type="submit" className="w-[380px]">Cadastrar</ButtonLogin>
 
       <div className="w-[250px] bg-gray2 h-[2px] my-4"></div>
 

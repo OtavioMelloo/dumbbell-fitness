@@ -69,13 +69,13 @@ const Login = () => {
         />
       </div>
 
-      <ButtonLogin type="submit">Entrar</ButtonLogin>
+      <ButtonLogin type="submit" className="w-[380px]">Entrar</ButtonLogin>
 
       <div className="w-[250px] bg-gray2 h-[2px] my-4"></div>
 
       <div className="flex flex-col gap-2 mt-2">
-        <ButtonLogin variant="secondary">Entrar com o Facebook</ButtonLogin>
-        <ButtonLogin variant="secondary">Entrar com o Google</ButtonLogin>
+        <ButtonLogin variant="secondary" className="w-[380px]">Entrar com o Facebook</ButtonLogin>
+        <ButtonLogin variant="secondary" className="w-[380px]">Entrar com o Google</ButtonLogin>
       </div>
 
       <div className="h-[20px] my-2">

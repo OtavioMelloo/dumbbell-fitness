@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        bebas: ["Bebas Neue", "sans-serif"],
-        roboto: ["Roboto", "Arial", "sans-serif"],
+        sans: ["var(--font-roboto)", "sans-serif"],
+        bebas: ["var(--font-bebas)", "cursive"],
       },
       colors: {
         dumbCinza: "#1c1c1c",
