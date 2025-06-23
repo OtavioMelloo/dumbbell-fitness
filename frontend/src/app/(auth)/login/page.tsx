@@ -3,16 +3,16 @@
 import React, { useState } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
-import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { loginUser } from "@/services/api";
 
 /**
  * Componente de Login
  *
  * Funcionalidades:
- * - Autenticação de usuários
+ * - Autenticação de usuários usando DRF Token
  * - Validação de credenciais
- * - Armazenamento de token no localStorage
+ * - Armazenamento de token e informações do usuário no localStorage
  * - Redirecionamento após login
  * - Links para redes sociais (Facebook/Google)
  * - Navegação para página de registro
@@ -22,39 +22,47 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Hook para navegação entre páginas
   const router = useRouter();
 
   /**
    * Função principal para autenticação do usuário
-   * Envia credenciais para a API Django e armazena o token
+   * Envia credenciais para a API Django DRF e armazena o token e dados do usuário
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Previne recarregamento da página
+    setIsLoading(true);
+    setError("");
 
     try {
-      // Faz requisição POST para a API de autenticação
-      const res = await axios.post("http://localhost:8000/api-token-auth/", {
+      // Usa a função de login do serviço de API
+      const { token, user } = await loginUser({
         username: email, // Django espera 'username' mesmo sendo email
         password: senha,
       });
 
-      // Extrai o token da resposta
-      const { token } = res.data;
-
-      // Armazena o token no localStorage para uso posterior
-      localStorage.setItem("token", token);
+      console.log("Logado com sucesso!", { user });
 
       // Redireciona para a página de rotinas após login bem-sucedido
       router.push("/rotinas");
-
-      console.log("Logado com sucesso!");
-    } catch (err) {
+    } catch (err: any) {
       // Tratamento de erro de autenticação
-      const error = err as AxiosError;
-      console.error(error.response?.data);
-      setError("Email ou senha inválidos");
+      console.error("Erro no login:", err);
+
+      // Verifica se é um erro de rede ou de credenciais
+      if (err.response?.status === 400) {
+        setError("Email ou senha inválidos");
+      } else if (err.response?.status === 401) {
+        setError("Credenciais inválidas");
+      } else if (!err.response) {
+        setError("Erro de conexão. Verifique se o servidor está rodando.");
+      } else {
+        setError("Erro interno do servidor");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,6 +85,7 @@ const Login = () => {
           error={error}
           type="email"
           id="email"
+          disabled={isLoading}
         />
 
         {/* Campo de Senha */}
@@ -88,19 +97,34 @@ const Login = () => {
           error={error}
           type="password"
           id="senha"
+          disabled={isLoading}
         />
       </div>
 
       {/* Botão de login principal */}
-      <ButtonLogin type="submit">Entrar</ButtonLogin>
+      <ButtonLogin type="submit" disabled={isLoading}>
+        {isLoading ? "Entrando..." : "Entrar"}
+      </ButtonLogin>
 
       {/* Separador visual */}
       <div className="w-[250px] bg-gray2 h-[2px] my-4"></div>
 
       {/* Botões de login social */}
       <div className="flex flex-col gap-2 mt-2">
-        <ButtonLogin variant="secondary">Entrar com o Facebook</ButtonLogin>
-        <ButtonLogin variant="secondary">Entrar com o Google</ButtonLogin>
+        <ButtonLogin
+          variant="secondary"
+          disabled={isLoading}
+          onClick={() => router.push("/login/facebook")}
+        >
+          Entrar com o Facebook
+        </ButtonLogin>
+        <ButtonLogin
+          variant="secondary"
+          disabled={isLoading}
+          onClick={() => router.push("/login/google")}
+        >
+          Entrar com o Google
+        </ButtonLogin>
       </div>
 
       {/* Link para página de registro */}

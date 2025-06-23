@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Roboto } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 /**
  * Configuração das fontes Google Fonts
@@ -36,6 +37,7 @@ export const metadata: Metadata = {
  * - Fontes personalizadas (Roboto e Bebas Neue)
  * - Estilos globais
  * - Estrutura básica do HTML
+ * - Contexto de autenticação global
  *
  * @param children - Componentes filhos que serão renderizados dentro do layout
  */
@@ -49,8 +51,11 @@ export default function RootLayout({
       <body
         className={`${bebas_neue.variable} ${roboto.variable} antialiased flex w-full h-screen bg-grayp justify-center`}
       >
-        {/* Renderiza os componentes filhos (páginas) */}
-        {children}
+        {/* Provider de autenticação que envolve toda a aplicação */}
+        <AuthProvider>
+          {/* Renderiza os componentes filhos (páginas) */}
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

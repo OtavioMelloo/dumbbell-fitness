@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import api from "@/services/api";
 
 /**
  * Componente de Registro/Cadastro
@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
  * - Conversão de altura de cm para metros
  * - Validações de campos obrigatórios
  * - Integração com API Django
+ * - Redirecionamento para matrícula após sucesso
  */
 const Register = () => {
   // Estado para controlar as etapas do cadastro (1 = endereço, 2 = dados pessoais)
@@ -31,6 +32,7 @@ const Register = () => {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Estados para dados do endereço
   const [cep, setCep] = useState("");
@@ -170,6 +172,9 @@ const Register = () => {
       return;
     }
 
+    setIsSubmitting(true);
+    setError("");
+
     try {
       // Log dos dados que serão enviados
       console.log("Enviando dados para API:", {
@@ -193,76 +198,62 @@ const Register = () => {
       });
 
       // ETAPA 1: Criar o endereço primeiro
-      const enderecoRes = await axios.post(
-        "http://localhost:8000/api/v1/cadastros/endereco/",
-        {
-          cep,
-          rua,
-          numero,
-          complemento,
-          bairro,
-          cidade,
-          estado,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
+      const enderecoRes = await api.post("/cadastros/endereco/", {
+        cep,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+      });
 
       console.log("Endereço criado:", enderecoRes.data);
 
       // ETAPA 2: Criar o aluno com o ID do endereço criado
-      const alunoRes = await axios.post(
-        "http://localhost:8000/api/v1/cadastros/alunos/",
-        {
-          nome,
-          cpf,
-          sexo,
-          data_nascimento: dataNascimento,
-          endereco: enderecoRes.data.id, // ID do endereço criado
-          peso: parseFloat(peso),
-          altura: parseFloat(alturaMetros), // Altura em metros
-          email,
-          password: senha,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
+      const alunoRes = await api.post("/cadastros/alunos/", {
+        nome,
+        cpf,
+        sexo,
+        data_nascimento: dataNascimento,
+        endereco: enderecoRes.data.id, // ID do endereço criado
+        peso: parseFloat(peso),
+        altura: parseFloat(alturaMetros), // Altura em metros
+        email,
+        password: senha,
+      });
 
       console.log("Usuário cadastrado com sucesso!", alunoRes.data);
 
-      // Redireciona para página de login após sucesso
-      router.push("/login");
-    } catch (err) {
+      // Redireciona para página de matrícula após sucesso
+      router.push("/matricula");
+    } catch (err: any) {
       console.error("Erro na API:", err);
-      if (axios.isAxiosError(err)) {
-        console.error("Status do erro:", err.response?.status);
-        console.error("Dados do erro:", err.response?.data);
 
-        // Mostrar erro específico da API se disponível
-        if (err.response?.data) {
-          const errorData = err.response.data;
-          if (typeof errorData === "object") {
-            // Se for um objeto de erros, extrai as mensagens
-            const errorMessages = Object.values(errorData).flat();
-            setError(`Erro: ${errorMessages.join(", ")}`);
-          } else {
-            // Se for uma string simples
-            setError(`Erro: ${errorData}`);
-          }
+      // Tratamento de erros específicos
+      if (err.response?.status === 400) {
+        const errorData = err.response.data;
+        if (typeof errorData === "object") {
+          // Se for um objeto de erros, extrai as mensagens
+          const errorMessages = Object.values(errorData).flat();
+          setError(`Erro: ${errorMessages.join(", ")}`);
         } else {
-          setError("Erro ao cadastrar. Verifique os dados.");
+          // Se for uma string simples
+          setError(`Erro: ${errorData}`);
         }
+      } else if (err.response?.status === 404) {
+        setError(
+          "Endpoint não encontrado. Verifique se o servidor está configurado corretamente."
+        );
+      } else if (err.response?.status === 500) {
+        setError("Erro interno do servidor. Tente novamente.");
+      } else if (!err.response) {
+        setError("Erro de conexão. Verifique se o servidor está rodando.");
       } else {
         setError("Erro ao cadastrar. Verifique os dados.");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -390,7 +381,9 @@ const Register = () => {
         </div>
 
         {/* Botão para avançar para próxima etapa */}
-        <ButtonLogin type="submit">Próximo</ButtonLogin>
+        <ButtonLogin type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Processando..." : "Próximo"}
+        </ButtonLogin>
 
         {/* Exibição de erros */}
         {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
@@ -518,7 +511,9 @@ const Register = () => {
         <ButtonLogin type="button" onClick={handlePrevStep}>
           Voltar
         </ButtonLogin>
-        <ButtonLogin type="submit">Cadastrar</ButtonLogin>
+        <ButtonLogin type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+        </ButtonLogin>
       </div>
 
       {/* Separador visual */}

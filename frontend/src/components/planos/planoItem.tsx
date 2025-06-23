@@ -1,8 +1,12 @@
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
 
 /**
  * Interface para as props do componente PlanoItem
  *
+ * @property id - ID único do plano
  * @property titulo - Nome do plano
  * @property preco - Preço mensal do plano
  * @property beneficios - Lista de benefícios incluídos no plano
@@ -12,6 +16,7 @@ import React from "react";
  * @property buttonTextColor - Classe CSS para a cor do texto do botão (opcional)
  */
 function PlanoItem({
+  id,
   titulo,
   preco,
   beneficios,
@@ -20,6 +25,7 @@ function PlanoItem({
   buttonColor,
   buttonTextColor = "text-white", // Valor padrão para cor do texto
 }: Readonly<{
+  id: number;
   titulo: string;
   preco: number;
   beneficios: string[];
@@ -28,6 +34,19 @@ function PlanoItem({
   buttonColor: string;
   buttonTextColor?: string;
 }>) {
+  // Hook para navegação
+  const router = useRouter();
+
+  /**
+   * Função para redirecionar para a página de checkout com o ID do plano
+   */
+  const handleAssinar = () => {
+    router.push(`/matricula/checkout?plano=${id}`);
+  };
+
+  // Converte preco para número para garantir que toFixed funcione
+  const precoNumerico = typeof preco === "string" ? parseFloat(preco) : preco;
+
   return (
     <div
       className={`w-[390px] h-[620px] flex flex-col justify-between items-center border-4 ${buttonBorder} p-6 rounded-2xl min-h-[400px] bg-black`}
@@ -65,11 +84,12 @@ function PlanoItem({
       <div className="flex flex-col items-center w-full">
         {/* Preço do plano */}
         <p className={`text-[61px] mb-[-10px] font-bebas text-white`}>
-          R${preco.toFixed(2)}
+          R${precoNumerico.toFixed(2)}
         </p>
 
         {/* Botão de assinatura */}
         <button
+          onClick={handleAssinar}
           className={`w-full py-4 px-4 text-center font-bold rounded ${buttonColor} ${buttonTextColor} transition hover:scale-105`}
         >
           ASSINAR AGORA
