@@ -3,6 +3,7 @@
 import RotinaHeader from "@/components/rotina/RotinaHeader";
 import React, { useState } from "react";
 import RotinaModal from "./RotinaModal";
+import RoutineCard from "@/components/rotina/RoutineCards";
 
 /**
  * Página de Rotinas
@@ -20,7 +21,6 @@ const Page = () => {
   const [showModal, setShowModal] = useState(false);
 
   const handleSave = () => {
-    // lógica de salvar, atualizar lista, etc
     setShowModal(false);
   };
 
@@ -35,6 +35,19 @@ const Page = () => {
           onSave={handleSave}
         />
       )}
+
+      <div>
+        <RoutineCard
+          routine={{ id: "1", name: "teste" }}
+          onStart={(id) => console.log("Começar rotina:", id)}
+        />
+      </div>
+      <div>
+        <RoutineCard
+          routine={{ id: "2", name: "teste2" }}
+          onStart={(id) => console.log("Começar rotina:", id)}
+        />
+      </div>
     </main>
   );
 };
