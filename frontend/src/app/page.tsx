@@ -1,5 +1,5 @@
-import Header from "@/components/header";
-import Carrossel from "@/components/carrossel";
+import Header from "@/components/Header";
+import Carrossel from "@/components/Carrossel";
 import Modalidades from "@/components/modalidade/modalidades";
 import Planos from "@/components/planos/planos";
 
