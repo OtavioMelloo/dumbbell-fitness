@@ -3,40 +3,66 @@
 import React, { useState } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
-import axios, { AxiosError } from "axios";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
+import { loginUser } from "@/services/api";
 
+/**
+ * Componente de Login
+ *
+ * Funcionalidades:
+ * - Autenticação de usuários usando DRF Token
+ * - Validação de credenciais
+ * - Armazenamento de token e informações do usuário no localStorage
+ * - Redirecionamento após login
+ * - Links para redes sociais (Facebook/Google)
+ * - Navegação para página de registro
+ */
 const Login = () => {
+  // Estados para os campos do formulário
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter(); // ✅ useRouter instanciado
+  // Hook para navegação entre páginas
+  const router = useRouter();
 
+  /**
+   * Função principal para autenticação do usuário
+   * Envia credenciais para a API Django DRF e armazena o token e dados do usuário
+   */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Previne recarregamento da página
+    setIsLoading(true);
+    setError("");
 
     try {
-      const res = await axios.post(
-        "https://sua-api-na-railway.app/api/token/",
-        {
-          email,
-          password: senha,
-        }
-      );
+      // Usa a função de login do serviço de API
+      const { token, user } = await loginUser({
+        username: email, // Django espera 'username' mesmo sendo email
+        password: senha,
+      });
 
-      const { access, refresh } = res.data;
+      console.log("Logado com sucesso!", { user });
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      // Redireciona para a página de rotinas após login bem-sucedido
+      router.push("/rotinas");
+    } catch (err: any) {
+      // Tratamento de erro de autenticação
+      console.error("Erro no login:", err);
 
-      router.push("/rotinas"); 
-
-      console.log("Logado com sucesso!");
-    } catch (err) {
-      const error = err as AxiosError;
-      console.error(error.response?.data);
-      setError("Email ou senha inválidos");
+      // Verifica se é um erro de rede ou de credenciais
+      if (err.response?.status === 400) {
+        setError("Email ou senha inválidos");
+      } else if (err.response?.status === 401) {
+        setError("Credenciais inválidas");
+      } else if (!err.response) {
+        setError("Erro de conexão. Verifique se o servidor está rodando.");
+      } else {
+        setError("Erro interno do servidor");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -45,9 +71,12 @@ const Login = () => {
       onSubmit={handleSubmit}
       className="w-full h-full items-center justify-center flex flex-col"
     >
+      {/* Título da página */}
       <h1 className="h-[80px] text-white text-[61px] font-bebas">Login</h1>
 
+      {/* Container dos campos de entrada */}
       <div className="my-8">
+        {/* Campo de Email */}
         <InputLogin
           label="E-mail"
           placeholder="Coloque seu email"
@@ -56,8 +85,10 @@ const Login = () => {
           error={error}
           type="email"
           id="email"
+          disabled={isLoading}
         />
 
+        {/* Campo de Senha */}
         <InputLogin
           label="Senha"
           placeholder="Coloque sua senha"
@@ -66,24 +97,43 @@ const Login = () => {
           error={error}
           type="password"
           id="senha"
+          disabled={isLoading}
         />
       </div>
 
-      <ButtonLogin type="submit" className="w-[380px]">Entrar</ButtonLogin>
+      {/* Botão de login principal */}
+      <ButtonLogin type="submit" disabled={isLoading}>
+        {isLoading ? "Entrando..." : "Entrar"}
+      </ButtonLogin>
 
+      {/* Separador visual */}
       <div className="w-[250px] bg-gray2 h-[2px] my-4"></div>
 
+      {/* Botões de login social */}
       <div className="flex flex-col gap-2 mt-2">
-        <ButtonLogin variant="secondary" className="w-[380px]">Entrar com o Facebook</ButtonLogin>
-        <ButtonLogin variant="secondary" className="w-[380px]">Entrar com o Google</ButtonLogin>
+        <ButtonLogin
+          variant="secondary"
+          disabled={isLoading}
+          onClick={() => router.push("/login/facebook")}
+        >
+          Entrar com o Facebook
+        </ButtonLogin>
+        <ButtonLogin
+          variant="secondary"
+          disabled={isLoading}
+          onClick={() => router.push("/login/google")}
+        >
+          Entrar com o Google
+        </ButtonLogin>
       </div>
 
+      {/* Link para página de registro */}
       <div className="h-[20px] my-2">
         <h3 className="text-white">
           Não possui conta?{" "}
           <span
             className="underline text-primary-green italic cursor-pointer"
-            onClick={() => router.push("/registro")} 
+            onClick={() => router.push("/registro")}
           >
             Criar uma conta
           </span>
