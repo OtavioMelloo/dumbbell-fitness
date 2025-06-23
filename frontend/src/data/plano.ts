@@ -1,5 +1,17 @@
 import { CircleCheck } from "lucide-react";
 
+/**
+ * Tipo TypeScript para definir a estrutura de um plano de academia
+ *
+ * @property id - Identificador único do plano
+ * @property titulo - Nome do plano
+ * @property preco - Preço mensal do plano
+ * @property beneficios - Lista de benefícios incluídos no plano
+ * @property Icone - Componente React do ícone do plano
+ * @property buttonColor - Cor de fundo do botão do plano
+ * @property buttonBorder - Cor da borda do botão do plano
+ * @property buttonTextColor - Cor do texto do botão (opcional)
+ */
 export type PlanoProps = {
   id: number;
   titulo: string;
@@ -12,6 +24,15 @@ export type PlanoProps = {
   buttonTextColor?: string;
 };
 
+/**
+ * Array de planos disponíveis na academia
+ *
+ * Cada plano contém:
+ * - Informações básicas (título, preço)
+ * - Lista de benefícios específicos
+ * - Configurações visuais para o botão
+ * - Ícone representativo
+ */
 export const plano: PlanoProps[] = [
   {
     id: 1,
@@ -22,10 +43,10 @@ export const plano: PlanoProps[] = [
       "Atendimento exclusivo com professores dumbbell.",
       "Acesso ilimitado à unidade.",
     ],
-    Icone: CircleCheck,
-    buttonBorder: "border-secundary-purple",
-    buttonColor: "bg-secundary-purple",
-    buttonTextColor: "text-white",
+    Icone: CircleCheck, // Ícone de check do Lucide React
+    buttonBorder: "border-secundary-purple", // Borda roxa
+    buttonColor: "bg-secundary-purple", // Fundo roxo
+    buttonTextColor: "text-white", // Texto branco
   },
   {
     id: 2,
@@ -38,9 +59,9 @@ export const plano: PlanoProps[] = [
       "Leve 3 amigos por mês para treinar com você.",
       "Sem multas ou taxas de cancelamento.",
     ],
-    Icone: CircleCheck,
-    buttonBorder: "border-primary-green",
-    buttonColor: "bg-primary-green",
-    buttonTextColor: "text-black",
+    Icone: CircleCheck, // Ícone de check do Lucide React
+    buttonBorder: "border-primary-green", // Borda verde
+    buttonColor: "bg-primary-green", // Fundo verde
+    buttonTextColor: "text-black", // Texto preto
   },
 ];
