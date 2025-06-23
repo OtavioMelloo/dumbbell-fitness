@@ -227,30 +227,35 @@ const Register = () => {
 
       // Redireciona para página de matrícula após sucesso
       router.push("/matricula");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro na API:", err);
 
       // Tratamento de erros específicos
-      if (err.response?.status === 400) {
-        const errorData = err.response.data;
-        if (typeof errorData === "object") {
-          // Se for um objeto de erros, extrai as mensagens
-          const errorMessages = Object.values(errorData).flat();
-          setError(`Erro: ${errorMessages.join(", ")}`);
+      if (err && typeof err === "object" && "response" in err) {
+        const errorResponse = err as {
+          response?: { status?: number; data?: any };
+        };
+        if (errorResponse.response?.status === 400) {
+          const errorData = errorResponse.response.data;
+          if (typeof errorData === "object") {
+            // Se for um objeto de erros, extrai as mensagens
+            const errorMessages = Object.values(errorData).flat();
+            setError(`Erro: ${errorMessages.join(", ")}`);
+          } else {
+            // Se for uma string simples
+            setError(`Erro: ${errorData}`);
+          }
+        } else if (errorResponse.response?.status === 404) {
+          setError(
+            "Endpoint não encontrado. Verifique se o servidor está configurado corretamente."
+          );
+        } else if (errorResponse.response?.status === 500) {
+          setError("Erro interno do servidor. Tente novamente.");
         } else {
-          // Se for uma string simples
-          setError(`Erro: ${errorData}`);
+          setError("Erro ao cadastrar. Verifique os dados.");
         }
-      } else if (err.response?.status === 404) {
-        setError(
-          "Endpoint não encontrado. Verifique se o servidor está configurado corretamente."
-        );
-      } else if (err.response?.status === 500) {
-        setError("Erro interno do servidor. Tente novamente.");
-      } else if (!err.response) {
-        setError("Erro de conexão. Verifique se o servidor está rodando.");
       } else {
-        setError("Erro ao cadastrar. Verifique os dados.");
+        setError("Erro de conexão. Verifique se o servidor está rodando.");
       }
     } finally {
       setIsSubmitting(false);

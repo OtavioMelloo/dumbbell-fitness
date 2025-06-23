@@ -43,7 +43,7 @@ const Login = () => {
 
     try {
       // Usa a função de login do serviço de API
-      const { token, user } = await loginUser({
+      const { user } = await loginUser({
         username: email, // Django espera 'username' mesmo sendo email
         password: senha,
       });
@@ -52,19 +52,22 @@ const Login = () => {
 
       // Redireciona para a página de rotinas após login bem-sucedido
       router.push("/appdumbbell/rotinas");
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Tratamento de erro de autenticação
       console.error("Erro no login:", err);
 
       // Verifica se é um erro de rede ou de credenciais
-      if (err.response?.status === 400) {
-        setError("Email ou senha inválidos");
-      } else if (err.response?.status === 401) {
-        setError("Credenciais inválidas");
-      } else if (!err.response) {
-        setError("Erro de conexão. Verifique se o servidor está rodando.");
+      if (err && typeof err === "object" && "response" in err) {
+        const errorResponse = err as { response?: { status?: number } };
+        if (errorResponse.response?.status === 400) {
+          setError("Email ou senha inválidos");
+        } else if (errorResponse.response?.status === 401) {
+          setError("Credenciais inválidas");
+        } else {
+          setError("Erro interno do servidor");
+        }
       } else {
-        setError("Erro interno do servidor");
+        setError("Erro de conexão. Verifique se o servidor está rodando.");
       }
     } finally {
       setIsLoading(false);

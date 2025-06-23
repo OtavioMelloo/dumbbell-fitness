@@ -34,7 +34,7 @@ const FacebookLoginPage = () => {
       setTimeout(() => {
         router.push("/rotinas");
       }, 1000);
-    } catch (err) {
+    } catch {
       setError("Erro ao fazer login com Facebook");
     } finally {
       setIsLoading(false);

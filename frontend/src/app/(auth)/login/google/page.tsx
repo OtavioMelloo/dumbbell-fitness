@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 /**
  * Página de Login do Google
@@ -39,7 +38,7 @@ const GoogleLoginPage = () => {
       setTimeout(() => {
         router.push("/rotinas");
       }, 2000);
-    } catch (err) {
+    } catch {
       setError("Erro ao fazer login com Google");
     } finally {
       setIsLoading(false);
