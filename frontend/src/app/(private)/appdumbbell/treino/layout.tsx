@@ -6,16 +6,21 @@ import MatriculaCheck from "@/components/MatriculaCheck";
 
 /**
  * Configuração das fontes Google Fonts
+ *
+ * Roboto: Fonte principal para textos do corpo
+ * Bebas Neue: Fonte para títulos e elementos destacados
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const roboto = Roboto({
-  variable: "--font-roboto",
-  subsets: ["latin"],
+  variable: "--font-roboto", // Variável CSS para usar a fonte Roboto
+  subsets: ["latin"], // Subconjunto de caracteres latinos
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const bebas_neue = Bebas_Neue({
-  variable: "--font-bebas",
-  subsets: ["latin"],
-  weight: "400",
+  variable: "--font-bebas", // Variável CSS para usar a fonte Bebas Neue
+  subsets: ["latin"], // Subconjunto de caracteres latinos
+  weight: "400", // Peso da fonte (normal)
 });
 
 /**

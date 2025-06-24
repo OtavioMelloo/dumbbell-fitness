@@ -8,7 +8,6 @@ import {
   criarTreino,
   atualizarTreino,
   CriarTreinoData,
-  ExercicioTreino,
   buscarAlunoPorNome,
   TreinoCompleto,
 } from "@/services/api";
@@ -43,7 +42,6 @@ export default function RotinaModal({
   const [exercicios, setExercicios] = useState<Exercicio[]>([]);
   const [selecionados, setSelecionados] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Determinar se está editando ou criando
@@ -94,14 +92,13 @@ export default function RotinaModal({
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      setError(null);
 
       const carregarExercicios = async () => {
         try {
           const dados = await buscarExerciciosParaTreino();
           setExercicios(dados);
         } catch (error) {
-          setError("Falha ao carregar exercícios.");
+          console.error("Erro ao carregar exercícios:", error);
         } finally {
           setLoading(false);
         }
@@ -144,7 +141,6 @@ export default function RotinaModal({
       setDisponibilidade("");
       setObservacao("");
       setSelecionados([]);
-      setError(null);
       setLoading(false);
     }
   }, [isOpen, treinoParaEditar]);
@@ -396,9 +392,8 @@ export default function RotinaModal({
                     {loading && (
                       <p className="text-gray-400">Carregando exercícios...</p>
                     )}
-                    {error && <p className="text-red-400">{error}</p>}
 
-                    {!loading && !error && (
+                    {!loading && (
                       <div className="max-h-60 overflow-y-auto space-y-2 bg-gray rounded-lg p-4">
                         {exercicios.length === 0 && (
                           <p className="text-gray-400">

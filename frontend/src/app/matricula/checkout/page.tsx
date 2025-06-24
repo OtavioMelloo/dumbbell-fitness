@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   PlanoProps,
@@ -36,10 +36,10 @@ const BANDEIRAS_CARTAO = [
  * - Campos: número, nome, validade (AAAA/MM), CVV, bandeira
  * - Envio dos dados do cartão para API via POST com autenticação
  */
-const CheckoutPage = () => {
+const CheckoutPageContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, isAuthenticated, checkMatricula } = useAuth();
+  const { user, checkMatricula } = useAuth();
 
   // Estados para dados do cartão
   const [numeroCartao, setNumeroCartao] = useState("");
@@ -175,7 +175,7 @@ const CheckoutPage = () => {
 
     try {
       // Formatar a data de validade corretamente (YYYY-MM-DD)
-      const dataValidadeFormatada = formatarValidadeParaAPI(validade);
+      formatarValidadeParaAPI(validade);
 
       // Primeiro, criar o cartão
       const dadosCartao = {
@@ -241,7 +241,7 @@ const CheckoutPage = () => {
         const errorResponse = err as {
           response?: {
             status?: number;
-            data?: any;
+            data?: unknown;
           };
         };
 
@@ -471,6 +471,14 @@ const CheckoutPage = () => {
         </div>
       </div>
     </ProtectedRoute>
+  );
+};
+
+const CheckoutPage = () => {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <CheckoutPageContent />
+    </Suspense>
   );
 };
 

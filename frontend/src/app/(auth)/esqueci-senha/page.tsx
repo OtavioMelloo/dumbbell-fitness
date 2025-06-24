@@ -58,7 +58,7 @@ const EsqueciSenha = () => {
       // Tratamento de erros específicos
       if (err && typeof err === "object" && "response" in err) {
         const errorResponse = err as {
-          response?: { status?: number; data?: any };
+          response?: { status?: number; data?: unknown };
         };
         if (errorResponse.response?.status === 400) {
           setError("Email não encontrado ou inválido.");

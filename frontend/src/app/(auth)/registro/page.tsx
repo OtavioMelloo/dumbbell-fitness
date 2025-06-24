@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,7 +19,7 @@ import { Eye, EyeOff } from "lucide-react";
  * - Integração com API Django
  * - Redirecionamento para matrícula após sucesso
  */
-const Register = () => {
+const RegisterContent = () => {
   // Estado para controlar as etapas do cadastro (1 = endereço, 2 = dados pessoais)
   const [step, setStep] = useState(1);
 
@@ -602,6 +602,14 @@ const Register = () => {
       {/* Exibição de erros */}
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
     </form>
+  );
+};
+
+const Register = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterContent />
+    </Suspense>
   );
 };
 

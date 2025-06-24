@@ -56,6 +56,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     returnUrl,
     pathname,
     redirectAttempted,
+    user,
   ]);
 
   // Mostra loading enquanto verifica autenticação

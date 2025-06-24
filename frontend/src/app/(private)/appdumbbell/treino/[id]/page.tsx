@@ -9,13 +9,13 @@ import {
   salvarUltimaRotinaFinalizada,
 } from "@/services/api";
 import {
-  Play,
-  Pause,
-  RotateCcw,
+  // Play,
+  // Pause,
+  // RotateCcw,
   Plus,
-  X,
-  Timer,
-  Check,
+  // X,
+  // Timer,
+  // Check,
   Trash2,
   Trophy,
 } from "lucide-react";
@@ -72,7 +72,7 @@ export default function TreinoPage() {
   const [newExerciseDescanso, setNewExerciseDescanso] = useState(90);
   const [treinoStartTime, setTreinoStartTime] = useState<Date | null>(null);
   const [treinoDuration, setTreinoDuration] = useState(0);
-  const [showDiscardWarning, setShowDiscardWarning] = useState(false);
+  // const [showDiscardWarning, setShowDiscardWarning] = useState(false);
 
   useEffect(() => {
     const carregarTreino = async () => {
@@ -210,14 +210,6 @@ export default function TreinoPage() {
     );
   };
 
-  const updateCarga = (cardId: number, novaCarga: number) => {
-    setExerciciosCards((prev) =>
-      prev.map((card) =>
-        card.id === cardId ? { ...card, carga: novaCarga } : card
-      )
-    );
-  };
-
   const toggleCompleted = (cardId: number) => {
     setExerciciosCards((prev) =>
       prev.map((card) =>
@@ -252,12 +244,6 @@ export default function TreinoPage() {
 
   const removeExercise = (cardId: number) => {
     setExerciciosCards((prev) => prev.filter((card) => card.id !== cardId));
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const finalizarTreino = () => {
@@ -432,12 +418,9 @@ export default function TreinoPage() {
               nome={card.nome}
               series={card.series}
               repeticoes={card.repeticoes}
-              carga={card.carga}
-              descanso={card.descanso}
               isResting={card.isResting}
               restTimeLeft={card.restTimeLeft}
               completed={card.completed}
-              onUpdateCarga={updateCarga}
               onToggleCompleted={toggleCompleted}
               onStartRest={startRest}
               onPauseRest={pauseRest}
@@ -482,8 +465,8 @@ export default function TreinoPage() {
         {exerciciosCards.filter((card) => card.completed).length > 0 && (
           <div className="mt-4 text-center">
             <p className="text-yellow-400 text-sm">
-              ⚠️ Você tem progresso salvo. Use "Finalizar Treino" para salvar ou
-              "Descartar Treino" para cancelar.
+              ⚠️ Você tem progresso salvo. Use &quot;Finalizar Treino&quot; para
+              salvar ou &quot;Descartar Treino&quot; para cancelar.
             </p>
           </div>
         )}

@@ -44,11 +44,6 @@ function Header() {
     router.push("/login");
   };
 
-  // Função para navegar para registro
-  const navigateToRegistro = () => {
-    router.push("/registro");
-  };
-
   // Função para navegar para home
   const navigateToHome = () => {
     // Se está na área privada, navega para rotinas em vez da página inicial

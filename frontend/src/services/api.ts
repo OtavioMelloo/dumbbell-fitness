@@ -1,5 +1,25 @@
 import axios from "axios";
 
+// Interfaces para tipos de dados
+interface Cartao {
+  aluno: number;
+  numero_cartao: string;
+  nome_titular: string;
+  data_validade: string;
+  bandeira_cartao: string;
+}
+
+interface Matricula {
+  aluno: number;
+  ativo: boolean;
+  data_criacao: string;
+}
+
+interface Aluno {
+  id: number;
+  [key: string]: unknown;
+}
+
 /**
  * Configuração da instância do Axios para comunicação com a API
  *
@@ -150,7 +170,7 @@ export const getUserInfo = (): UserInfo | null => {
   if (userInfoStr) {
     try {
       return JSON.parse(userInfoStr);
-    } catch (error) {
+    } catch {
       // console.error("Erro ao parsear informações do usuário:", error);
       return null;
     }
@@ -220,7 +240,7 @@ export const loginUser = async (credentials: {
         first_name: userData.first_name,
         last_name: userData.last_name,
       };
-    } catch (userError) {
+    } catch {
       // console.error("Erro ao buscar dados do usuário:", userError);
       // Se não conseguir buscar dados completos, usa dados básicos
       userInfo = {
@@ -234,9 +254,9 @@ export const loginUser = async (credentials: {
     setAuthData(token, userInfo);
 
     return { token, userInfo };
-  } catch (error) {
+  } catch {
     // console.error("Erro no login:", error);
-    throw error;
+    throw new Error("Erro no login");
   }
 };
 
@@ -274,7 +294,7 @@ export const fetchCurrentUser = async (): Promise<UserInfo> => {
     localStorage.setItem("user_info", JSON.stringify(userInfo));
 
     return userInfo;
-  } catch (error) {
+  } catch {
     // console.warn("API não disponível, usando dados do localStorage:", error);
 
     // Se não conseguir buscar da API, tenta usar dados do localStorage
@@ -294,9 +314,7 @@ export const fetchCurrentUser = async (): Promise<UserInfo> => {
  * @param userId - ID do usuário
  * @returns Promise com true se tem matrícula ativa, false caso contrário
  */
-export const verificarMatriculaAtiva = async (
-  userId: number
-): Promise<boolean> => {
+export const verificarMatriculaAtiva = async (): Promise<boolean> => {
   try {
     // console.log("🔍 Verificando matrícula ativa para usuário:", userId);
 
@@ -344,13 +362,8 @@ export const verificarMatriculaAtiva = async (
 
     // console.log("❌ Aluno não encontrado");
     return false;
-  } catch (error) {
+  } catch {
     // console.error("❌ Erro ao verificar matrícula ativa:", error);
-    if (error && typeof error === "object" && "response" in error) {
-      const errorResponse = error as any;
-      // console.error("Status do erro:", errorResponse.response?.status);
-      // console.error("Dados do erro:", errorResponse.response?.data);
-    }
     return false;
   }
 };
@@ -383,7 +396,7 @@ export const criarCartao = async (dadosCartao: {
 
       // Procura por um cartão com os mesmos dados
       const cartaoExistente = cartoesExistentes.find(
-        (cartao: any) =>
+        (cartao: Cartao) =>
           cartao.aluno === aluno.id &&
           cartao.numero_cartao ===
             dadosCartao.numero_cartao.replace(/\s/g, "") &&
@@ -399,11 +412,8 @@ export const criarCartao = async (dadosCartao: {
         // );
         return cartaoExistente;
       }
-    } catch (error) {
-      // console.warn(
-      //   "Erro ao verificar cartões existentes, criando novo cartão:",
-      //   error
-      // );
+    } catch {
+      // console.warn("Erro ao verificar cartões existentes, criando novo cartão:", error);
     }
 
     // Adiciona o campo aluno aos dados do cartão
@@ -421,11 +431,19 @@ export const criarCartao = async (dadosCartao: {
 
     // Log detalhado do erro
     if (error && typeof error === "object" && "response" in error) {
-      const errorResponse = error as {
-        response?: { status?: number; data?: any };
+      const axiosError = error as {
+        response?: { status?: number; data?: unknown };
+        config?: { url?: string; data?: unknown; headers?: unknown };
       };
-      // console.error("Status do erro:", errorResponse.response?.status);
-      // console.error("Dados do erro:", errorResponse.response?.data);
+      console.error("📊 Status do erro:", axiosError.response?.status);
+      console.error("📋 Dados do erro:", axiosError.response?.data);
+      console.error(
+        "📋 Mensagem completa do erro:",
+        JSON.stringify(axiosError.response?.data, null, 2)
+      );
+      console.error("🔗 URL que falhou:", axiosError.config?.url);
+      console.error("📤 Dados enviados:", axiosError.config?.data);
+      console.error("📤 Headers enviados:", axiosError.config?.headers);
     }
 
     throw error;
@@ -459,13 +477,13 @@ export const criarMatricula = async (dadosMatricula: {
 
       // Procura por uma matrícula ativa do mesmo aluno
       const matriculaExistente = matriculasExistentes.find(
-        (matricula: any) => matricula.aluno === aluno.id
+        (matricula: Matricula) => matricula.aluno === aluno.id
       );
 
       if (matriculaExistente) {
         // Retorna um erro especial que será tratado no frontend
         const error = new Error("MATRICULA_EXISTENTE");
-        (error as any).matriculaExistente = true;
+        (error as { matriculaExistente?: boolean }).matriculaExistente = true;
         throw error;
       }
     } catch (error) {
@@ -493,11 +511,18 @@ export const criarMatricula = async (dadosMatricula: {
 
     // Log detalhado do erro
     if (error && typeof error === "object" && "response" in error) {
-      const errorResponse = error as {
-        response?: { status?: number; data?: any };
+      const axiosError = error as {
+        response?: { status?: number; data?: unknown };
+        config?: { url?: string; data?: unknown };
       };
-      // console.error("Status do erro:", errorResponse.response?.status);
-      // console.error("Dados do erro:", errorResponse.response?.data);
+      console.error("📊 Status do erro:", axiosError.response?.status);
+      console.error("📋 Dados do erro:", axiosError.response?.data);
+      console.error(
+        "📋 Mensagem completa do erro:",
+        JSON.stringify(axiosError.response?.data, null, 2)
+      );
+      console.error("🔗 URL que falhou:", axiosError.config?.url);
+      console.error("📤 Dados enviados:", axiosError.config?.data);
     }
 
     throw error;
@@ -645,7 +670,7 @@ export const atualizarPerfil = async (userData: {
 
       const response = await api.patch(url, userData);
       return response.data;
-    } catch (apiError) {
+    } catch {
       // console.warn("API não disponível, simulando atualização:", apiError);
 
       // Simular atualização salvando no localStorage
@@ -701,7 +726,7 @@ export const listarAlunos = async () => {
     console.log("Lista de alunos:", response.data);
 
     // Mostrar detalhes de cada aluno
-    response.data.forEach((aluno: any, index: number) => {
+    response.data.forEach((aluno: Aluno, index: number) => {
       console.log(`Aluno ${index + 1} completo:`, aluno);
       console.log(`Campos do Aluno ${index + 1}:`, Object.keys(aluno));
     });
@@ -725,14 +750,23 @@ export const buscarExercicios = async () => {
     // Se a API retornou dados, processar e retornar
     if (response.data && response.data.length > 0) {
       // Processar os dados da API para garantir que todos os campos existam
-      const exerciciosProcessados = response.data.map((exercicio: any) => ({
-        id: exercicio.id,
-        nome: exercicio.nome,
-        descricao: exercicio.descricao,
-        categoria: exercicio.categoria || "Não definido",
-        grupo_muscular: exercicio.grupo_muscular || "Não definido",
-        equipamento: exercicio.equipamento || null,
-      }));
+      const exerciciosProcessados = response.data.map(
+        (exercicio: {
+          id: number;
+          nome: string;
+          descricao: string;
+          categoria?: string;
+          grupo_muscular?: string;
+          equipamento?: string | null;
+        }) => ({
+          id: exercicio.id,
+          nome: exercicio.nome,
+          descricao: exercicio.descricao,
+          categoria: exercicio.categoria || "Não definido",
+          grupo_muscular: exercicio.grupo_muscular || "Não definido",
+          equipamento: exercicio.equipamento || null,
+        })
+      );
 
       return exerciciosProcessados;
     } else {
@@ -929,7 +963,10 @@ export const criarTreino = async (dadosTreino: CriarTreinoData) => {
 
     // Log detalhado do erro
     if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as any;
+      const axiosError = error as {
+        response?: { status?: number; data?: unknown };
+        config?: { url?: string; data?: unknown; headers?: unknown };
+      };
       console.error("📊 Status do erro:", axiosError.response?.status);
       console.error("📋 Dados do erro:", axiosError.response?.data);
       console.error(
@@ -1052,7 +1089,10 @@ export const atualizarTreino = async (
 
     // Log detalhado do erro
     if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as any;
+      const axiosError = error as {
+        response?: { status?: number; data?: unknown };
+        config?: { url?: string; data?: unknown };
+      };
       console.error("📊 Status do erro:", axiosError.response?.status);
       console.error("📋 Dados do erro:", axiosError.response?.data);
       console.error(
@@ -1184,9 +1224,9 @@ export const buscarMatriculaPorAluno = async () => {
     const matriculas = response.data.results || response.data;
     // Filtrar matrícula ativa mais recente
     const matriculaAtiva = matriculas
-      .filter((m: any) => m.ativo)
+      .filter((m: Matricula) => m.ativo)
       .sort(
-        (a: any, b: any) =>
+        (a: Matricula, b: Matricula) =>
           new Date(b.data_criacao).getTime() -
           new Date(a.data_criacao).getTime()
       )[0];
@@ -1261,7 +1301,7 @@ export const converterDisponibilidadeParaAPI = (valor: string): string => {
  * @param userId - ID do usuário
  */
 export const salvarUltimaRotinaFinalizada = (
-  completedRoutine: any,
+  completedRoutine: unknown,
   userId?: number
 ) => {
   if (typeof window === "undefined") {

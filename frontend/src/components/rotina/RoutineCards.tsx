@@ -99,7 +99,8 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
           )}
 
           <p className="text-gray-300 text-sm mb-4">
-            Clique em "Começar" para iniciar esta rotina de exercícios.
+            Clique em &quot;Começar&quot; para iniciar esta rotina de
+            exercícios.
           </p>
         </div>
 

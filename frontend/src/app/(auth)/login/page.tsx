@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,7 +22,7 @@ import { Eye, EyeOff } from "lucide-react";
  * - Layout com imagem no lado esquerdo
  * - Ícone para mostrar/ocultar senha
  */
-const Login = () => {
+const LoginContent = () => {
   // Estados para os campos do formulário
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -32,7 +32,7 @@ const Login = () => {
 
   // Hook para navegação entre páginas
   const router = useRouter();
-  const { refreshUser, checkMatricula } = useAuth();
+  const { refreshUser } = useAuth();
   const searchParams = useSearchParams();
 
   /**
@@ -206,6 +206,14 @@ const Login = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+const Login = () => {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 };
 

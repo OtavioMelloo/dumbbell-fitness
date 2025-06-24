@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import {
   UserInfo,
   isAuthenticated,
@@ -85,11 +91,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * Função para verificar matrícula do usuário
    */
-  const checkMatricula = async () => {
+  const checkMatricula = useCallback(async () => {
     if (user) {
       try {
         console.log("🔍 Verificando matrícula para usuário:", user.id);
-        const temMatricula = await verificarMatriculaAtiva(user.id);
+        const temMatricula = await verificarMatriculaAtiva();
         console.log("✅ Resultado da verificação de matrícula:", temMatricula);
         setHasMatricula(temMatricula);
       } catch (error) {
@@ -100,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("⚠️ Usuário não disponível para verificar matrícula");
       setHasMatricula(false);
     }
-  };
+  }, [user]);
 
   /**
    * Função para atualizar informações do usuário
@@ -207,7 +213,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(false);
       setIsInitialized(true);
     }
-  }, []);
+  }, [checkMatricula]);
 
   /**
    * Valor do contexto

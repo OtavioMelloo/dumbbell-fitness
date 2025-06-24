@@ -1,7 +1,7 @@
 "use client";
 
 import RotinaHeader from "@/components/rotina/RotinaHeader";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import RotinaModal from "./RotinaModal";
 import RoutineCard from "@/components/rotina/RoutineCards";
 import LastCompletedRoutine from "@/components/rotina/LastCompletedRoutine";
@@ -37,14 +37,17 @@ const Page = () => {
   const [editingTreino, setEditingTreino] = useState<TreinoCompleto | null>(
     null
   );
-  const [lastCompletedRoutine, setLastCompletedRoutine] = useState<any>(null);
+  const [lastCompletedRoutine, setLastCompletedRoutine] = useState<{
+    id: number;
+    name: string;
+    objetivo: string;
+    completedAt: string;
+    duration?: string;
+    exercisesCompleted?: number;
+    totalExercises?: number;
+  } | null>(null);
 
-  // Carregar treinos quando o componente montar
-  useEffect(() => {
-    carregarTreinos();
-  }, []);
-
-  const carregarTreinos = async () => {
+  const carregarTreinos = useCallback(async () => {
     try {
       setLoading(true);
       const treinosData = await buscarTreinos();
@@ -81,7 +84,12 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  // Carregar treinos quando o componente montar
+  useEffect(() => {
+    carregarTreinos();
+  }, [carregarTreinos]);
 
   const handleSave = async () => {
     setShowModal(false);
@@ -167,8 +175,8 @@ const Page = () => {
                     Nenhuma rotina encontrada
                   </p>
                   <p className="text-gray-400 text-sm">
-                    Clique em "Adicionar Rotina" para criar sua primeira rotina
-                    de exercícios.
+                    Clique em &quot;Adicionar Rotina&quot; para criar sua
+                    primeira rotina de exercícios.
                   </p>
                 </div>
               )}

@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  User,
-  Camera,
-  Eye,
-  EyeOff,
-  CreditCard,
-  Calendar,
-  Star,
-} from "lucide-react";
+import { User, Camera, Eye, EyeOff, CreditCard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   atualizarPerfil,
@@ -30,6 +22,12 @@ import { useRouter } from "next/navigation";
  * - Edição de informações pessoais
  * - Alteração de email e senha
  */
+
+interface Plano {
+  nome: string;
+  [key: string]: unknown;
+}
+
 const Perfil = () => {
   const { user } = useAuth();
   const router = useRouter();
@@ -59,8 +57,7 @@ const Perfil = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Estados para informações da matrícula
-  const [matriculaInfo, setMatriculaInfo] = useState<any>(null);
-  const [planoInfo, setPlanoInfo] = useState<any>(null);
+  const [planoInfo, setPlanoInfo] = useState<Plano | null>(null);
   const [loadingMatricula, setLoadingMatricula] = useState(true);
 
   // Carregar dados do usuário quando o componente montar
@@ -83,7 +80,6 @@ const Perfil = () => {
           const matricula = await buscarMatriculaPorAluno();
 
           if (matricula) {
-            setMatriculaInfo(matricula);
             setPlanoInfo(matricula.plano);
 
             // Atualizar o campo plano no formulário

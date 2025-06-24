@@ -8,12 +8,9 @@ interface ExercicioCardProps {
   nome: string;
   series: number;
   repeticoes: number;
-  carga: number;
-  descanso: number;
   isResting: boolean;
   restTimeLeft: number;
   completed: boolean;
-  onUpdateCarga: (id: number, carga: number) => void;
   onToggleCompleted: (id: number) => void;
   onStartRest: (id: number) => void;
   onPauseRest: (id: number) => void;
@@ -33,12 +30,9 @@ const ExercicioCard: React.FC<ExercicioCardProps> = ({
   nome,
   series,
   repeticoes,
-  carga,
-  descanso,
   isResting,
   restTimeLeft,
   completed,
-  onUpdateCarga,
   onToggleCompleted,
   onStartRest,
   onPauseRest,
