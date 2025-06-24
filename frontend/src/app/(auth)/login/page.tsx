@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginUser } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -31,6 +32,8 @@ const Login = () => {
 
   // Hook para navegação entre páginas
   const router = useRouter();
+  const { refreshUser, checkMatricula } = useAuth();
+  const searchParams = useSearchParams();
 
   /**
    * Função principal para autenticação do usuário
@@ -43,15 +46,26 @@ const Login = () => {
 
     try {
       // Usa a função de login do serviço de API
-      const { user } = await loginUser({
+      const { userInfo } = await loginUser({
         username: email, // Django espera 'username' mesmo sendo email
         password: senha,
       });
 
-      console.log("Logado com sucesso!", { user });
+      console.log("Logado com sucesso!", { userInfo });
 
-      // Redireciona para a página de rotinas após login bem-sucedido
-      router.push("/appdumbbell/rotinas");
+      // Força a atualização do contexto de autenticação
+      await refreshUser();
+
+      // Verifica se há uma URL de retorno
+      const returnUrl = searchParams.get("returnUrl");
+
+      // Redireciona para a URL de retorno ou para rotinas
+      if (returnUrl) {
+        router.push(decodeURIComponent(returnUrl));
+      } else {
+        // Redireciona para rotinas por padrão
+        router.push("/appdumbbell/rotinas");
+      }
     } catch (err: unknown) {
       // Tratamento de erro de autenticação
       console.error("Erro no login:", err);
@@ -137,6 +151,18 @@ const Login = () => {
                 </button>
               }
             />
+          </div>
+
+          {/* Link Esqueci a Senha */}
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              onClick={() => router.push("/esqueci-senha")}
+              className="text-primary-green text-sm hover:text-primary-light-green transition-colors underline"
+              disabled={isLoading}
+            >
+              Esqueci a senha
+            </button>
           </div>
 
           {/* Botão de login principal */}

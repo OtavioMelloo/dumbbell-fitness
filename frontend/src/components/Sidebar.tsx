@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, Dumbbell, ClipboardList, LogOut } from "lucide-react";
+import { User, Dumbbell, ClipboardList, LogOut, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -24,6 +24,11 @@ const navItems = [
     label: "Exercícios",
     href: "/appdumbbell/exercicios",
     icon: Dumbbell, // Ícone de halter
+  },
+  {
+    label: "Contrate um Personal",
+    href: "/appdumbbell/contrate-personal",
+    icon: Users, // Ícone de usuários
   },
   {
     label: "Perfil",
@@ -80,12 +85,17 @@ const Sidebar = () => {
       <div className="w-full flex flex-col">
         {/* Logo da academia */}
         <div className="mb-8 flex flex-col items-center">
-          <h2 className="text-primary-green font-bebas text-4xl mb-[-8px] leading-none">
-            DUMBELL
-          </h2>
-          <h3 className="text-primary-green font-roboto font-light text-xl leading-none">
-            FITNESS
-          </h3>
+          <Link
+            href="/appdumbbell/rotinas"
+            className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+          >
+            <h2 className="text-primary-green font-bebas text-4xl mb-[-8px] leading-none">
+              DUMBELL
+            </h2>
+            <h3 className="text-primary-green font-roboto font-light text-xl leading-none">
+              FITNESS
+            </h3>
+          </Link>
         </div>
 
         {/* Lista de itens de navegação */}

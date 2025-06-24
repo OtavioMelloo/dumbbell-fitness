@@ -60,7 +60,17 @@ export const fetchPlanosFromAPI = async (): Promise<PlanoAPI[]> => {
  * @returns Array de planos no formato PlanoProps
  */
 export const convertPlanosFromAPI = (planosAPI: PlanoAPI[]): PlanoProps[] => {
-  return planosAPI.map((planoAPI, index) => ({
+  // Ordena os planos: Starter primeiro, depois Dumbbell
+  const planosOrdenados = planosAPI.sort((a, b) => {
+    const aIsStarter = a.titulo.toLowerCase().includes("starter");
+    const bIsStarter = b.titulo.toLowerCase().includes("starter");
+
+    if (aIsStarter && !bIsStarter) return -1; // Starter vem primeiro
+    if (!aIsStarter && bIsStarter) return 1; // Dumbbell vem depois
+    return 0; // Mantém ordem original se ambos são do mesmo tipo
+  });
+
+  return planosOrdenados.map((planoAPI) => ({
     id: planoAPI.id,
     titulo: planoAPI.titulo,
     preco:
@@ -69,10 +79,17 @@ export const convertPlanosFromAPI = (planosAPI: PlanoAPI[]): PlanoProps[] => {
         : planoAPI.preco,
     beneficios: planoAPI.beneficios,
     Icone: CircleCheck,
-    buttonBorder:
-      index === 0 ? "border-secundary-purple" : "border-primary-green",
-    buttonColor: index === 0 ? "bg-secundary-purple" : "bg-primary-green",
-    buttonTextColor: index === 0 ? "text-white" : "text-black",
+    // Primeiro plano (Starter) - roxo
+    // Segundo plano (Dumbbell) - verde
+    buttonBorder: planoAPI.titulo.toLowerCase().includes("starter")
+      ? "border-secundary-purple"
+      : "border-primary-green",
+    buttonColor: planoAPI.titulo.toLowerCase().includes("starter")
+      ? "bg-secundary-purple"
+      : "bg-primary-green",
+    buttonTextColor: planoAPI.titulo.toLowerCase().includes("starter")
+      ? "text-white"
+      : "text-black",
   }));
 };
 

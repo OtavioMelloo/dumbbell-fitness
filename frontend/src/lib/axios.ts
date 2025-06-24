@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://dumbbell-fitness-backend.onrender.com/api/v1',
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://dumbbell-fitness-backend-wg7d.onrender.com/api/v1",
   headers: {
     "Content-Type": "application/json",
   },

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Interface para as props do componente PlanoItem
@@ -36,12 +37,21 @@ function PlanoItem({
 }>) {
   // Hook para navegação
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   /**
-   * Função para redirecionar para a página de checkout com o ID do plano
+   * Função para redirecionar baseado no status de autenticação
    */
   const handleAssinar = () => {
-    router.push(`/matricula/checkout?plano=${id}`);
+    const checkoutUrl = `/matricula/checkout?plano=${id}`;
+
+    if (isAuthenticated) {
+      // Se está autenticado, vai direto para checkout
+      router.push(checkoutUrl);
+    } else {
+      // Se não está autenticado, vai para login com URL de retorno
+      router.push(`/login?returnUrl=${encodeURIComponent(checkoutUrl)}`);
+    }
   };
 
   // Converte preco para número para garantir que toFixed funcione

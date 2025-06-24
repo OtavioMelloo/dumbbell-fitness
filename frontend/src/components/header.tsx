@@ -1,18 +1,12 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { User } from "lucide-react";
 
 /**
  * Componente Header (Cabeçalho)
- *
- * Cabeçalho principal da aplicação contendo:
- * - Logo da academia (DUMBBELL FITNESS)
- * - Menu de navegação com links principais (apenas na página inicial)
- * - Botão de perfil (apenas quando logado)
- * - Botão de voltar para home (nas áreas privadas e de auth)
- * - Estilização consistente com o design system
- * - Navegação inteligente baseada na página atual
+ * Versão simplificada para evitar loops de redirecionamento
  */
 function Header() {
   const router = useRouter();
@@ -57,12 +51,12 @@ function Header() {
 
   // Função para navegar para home
   const navigateToHome = () => {
-    router.push("/");
-  };
-
-  // Função para navegar para perfil
-  const navigateToProfile = () => {
-    router.push("/appdumbbell/perfil");
+    // Se está na área privada, navega para rotinas em vez da página inicial
+    if (isPrivateArea) {
+      router.push("/appdumbbell/rotinas");
+    } else {
+      router.push("/");
+    }
   };
 
   // Verifica se está na área privada
@@ -75,8 +69,6 @@ function Header() {
   const isHomePage = pathname === "/";
   // Verifica se está na página sobre
   const isSobrePage = pathname === "/sobre";
-  // Verifica se está na página de login
-  const isLoginPage = pathname.startsWith("/login");
   // Verifica se está na página de registro
   const isRegistroPage = pathname.startsWith("/registro");
 
@@ -95,8 +87,8 @@ function Header() {
 
       {/* Menu de navegação - apenas na página inicial e sobre */}
       {(isHomePage || isSobrePage) && (
-        <div className="w-[624px] h-[60px] flex items-center justify-between">
-          <ul className="w-full text-roboto font-bold flex justify-between gap-4 p-4 text-[20px]">
+        <nav className="flex items-center justify-center flex-1">
+          <ul className="text-roboto font-bold flex items-center justify-center gap-8 text-[20px]">
             <li
               className="cursor-pointer hover:text-primary-green transition-colors duration-200"
               onClick={() => scrollToSection("planos")}
@@ -115,14 +107,24 @@ function Header() {
             >
               SOBRE
             </li>
-            <li
-              className="cursor-pointer hover:text-primary-green transition-colors duration-200"
-              onClick={navigateToLogin}
-            >
-              ENTRAR
+            <li>
+              <span
+                className="cursor-pointer hover:text-primary-green transition-colors duration-200"
+                onClick={navigateToLogin}
+              >
+                ROTINAS
+              </span>
+            </li>
+            <li>
+              <span
+                className="cursor-pointer hover:text-primary-green transition-colors duration-200"
+                onClick={navigateToLogin}
+              >
+                ENTRAR
+              </span>
             </li>
           </ul>
-        </div>
+        </nav>
       )}
 
       {/* Botões específicos para áreas de autenticação */}
@@ -150,15 +152,15 @@ function Header() {
 
       {/* Botões para área privada */}
       {isPrivateArea && (
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {/* Botão de perfil */}
-          <button
-            onClick={navigateToProfile}
+          <Link
+            href="/appdumbbell/perfil"
             className="w-12 h-12 bg-primary-green rounded-full flex items-center justify-center hover:bg-green-600 transition-colors duration-200"
             title="Meu Perfil"
           >
-            <User size={24} className="text-white" />
-          </button>
+            <User size={20} className="text-white" />
+          </Link>
 
           {/* Botão de voltar para home */}
           <button
@@ -166,17 +168,6 @@ function Header() {
             onClick={navigateToHome}
           >
             VOLTAR
-          </button>
-
-          {/* Botão de sair */}
-          <button
-            className="text-roboto font-bold text-[18px] cursor-pointer hover:text-primary-green transition-colors duration-200"
-            onClick={() => {
-              // Aqui você pode adicionar lógica de logout se necessário
-              router.push("/");
-            }}
-          >
-            SAIR
           </button>
         </div>
       )}

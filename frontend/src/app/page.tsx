@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div className="bg-gray w-screen flex flex-col items-center">
       {/* Container principal com largura máxima */}
-      <div className="w-[1250px]">
+      <div className="w-full max-w-[1250px] px-4">
         {/* Cabeçalho da página */}
         <Header />
 
@@ -36,7 +36,7 @@ export default function Home() {
         id="planos"
         className="w-full flex items-center justify-center bg-gray1 py-[15px] mt-[40px]"
       >
-        <div className="w-[1250px] flex flex-col items-center justify-center">
+        <div className="w-full max-w-[1250px] px-4 flex flex-col items-center justify-center">
           {/* Título da seção de planos */}
           <h1 className="text-white text-6xl font-bebas p-5">PLANOS</h1>
 

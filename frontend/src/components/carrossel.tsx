@@ -21,6 +21,7 @@ const Carrossel = () => {
         src="/img/carrossel1.svg" // Caminho da imagem no diretório public
         alt="Imagem carrossel 1" // Texto alternativo para acessibilidade
         fill // Preenche todo o container pai
+        priority // Prioriza o carregamento da imagem (LCP)
         className="object-cover" // Mantém proporção e cobre todo o espaço
       />
     </div>

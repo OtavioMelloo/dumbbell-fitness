@@ -10,16 +10,16 @@ interface RotinaHeaderProps {
 
 const RotinaHeader = ({ onAddClick }: RotinaHeaderProps) => {
   return (
-    <div className="flex items-center justify-between mb-6  px-4 py-2 rounded-12 ">
-      <h1 className="text-[42px] mb-[-10px] font-bebas text-white">ROTINAS</h1>
+    <div className="text-center mb-8">
+      <h1 className="text-[42px] mb-4 font-bebas text-white">ROTINAS</h1>
 
       <ButtonLogin
         onClick={onAddClick}
         variant="primary"
-        className="flex items-center justify-center gap-2 w-60"
+        className="flex items-center justify-center gap-2 w-48 mx-auto"
       >
         Adicionar Rotina
-        <Plus size={18} />
+        <Plus size={16} />
       </ButtonLogin>
     </div>
   );

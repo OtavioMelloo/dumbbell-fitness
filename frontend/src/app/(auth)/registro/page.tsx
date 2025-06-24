@@ -3,8 +3,10 @@
 import React, { useState } from "react";
 import ButtonLogin from "@/components/ButtonLogin";
 import InputLogin from "@/components/InputLogin";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import api from "@/services/api";
+import { loginUser } from "@/services/api";
+import { Eye, EyeOff } from "lucide-react";
 
 /**
  * Componente de Registro/Cadastro
@@ -33,6 +35,8 @@ const Register = () => {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Estados para dados do endereço
   const [cep, setCep] = useState("");
@@ -76,6 +80,18 @@ const Register = () => {
 
   // Hook para navegação entre páginas
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  /**
+   * Funções para alternar visibilidade das senhas
+   */
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   /**
    * Função para formatar CPF no padrão brasileiro
@@ -225,21 +241,43 @@ const Register = () => {
 
       console.log("Usuário cadastrado com sucesso!", alunoRes.data);
 
-      // Redireciona para página de matrícula após sucesso
-      router.push("/matricula");
+      // Fazer login automático após o registro
+      try {
+        const loginResponse = await loginUser({
+          username: email,
+          password: senha,
+        });
+
+        console.log("Login automático realizado:", loginResponse);
+      } catch (loginError) {
+        console.warn("Erro no login automático:", loginError);
+        // Continua mesmo se o login automático falhar
+      }
+
+      // Verifica se há uma URL de retorno
+      const returnUrl = searchParams.get("returnUrl");
+
+      // Redireciona para a URL de retorno ou para a página de matrícula
+      if (returnUrl) {
+        router.push(decodeURIComponent(returnUrl));
+      } else {
+        router.push("/matricula");
+      }
     } catch (err: unknown) {
       console.error("Erro na API:", err);
 
       // Tratamento de erros específicos
       if (err && typeof err === "object" && "response" in err) {
         const errorResponse = err as {
-          response?: { status?: number; data?: any };
+          response?: { status?: number; data?: unknown };
         };
         if (errorResponse.response?.status === 400) {
           const errorData = errorResponse.response.data;
-          if (typeof errorData === "object") {
+          if (typeof errorData === "object" && errorData !== null) {
             // Se for um objeto de erros, extrai as mensagens
-            const errorMessages = Object.values(errorData).flat();
+            const errorMessages = Object.values(
+              errorData as Record<string, unknown>
+            ).flat();
             setError(`Erro: ${errorMessages.join(", ")}`);
           } else {
             // Se for uma string simples
@@ -496,8 +534,17 @@ const Register = () => {
           placeholder="Crie uma senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
-          type="password"
+          type={showPassword ? "text" : "password"}
           id="senha"
+          rightIcon={
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          }
         />
 
         {/* Campo Confirmar Senha */}
@@ -506,8 +553,17 @@ const Register = () => {
           placeholder="Repita a senha"
           value={confirmarSenha}
           onChange={(e) => setConfirmarSenha(e.target.value)}
-          type="password"
+          type={showConfirmPassword ? "text" : "password"}
           id="confirmarSenha"
+          rightIcon={
+            <button
+              type="button"
+              onClick={toggleConfirmPasswordVisibility}
+              className="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          }
         />
       </div>
 
@@ -530,7 +586,13 @@ const Register = () => {
           Já tem conta?{" "}
           <span
             className="underline text-primary-green italic cursor-pointer"
-            onClick={() => router.push("/login")}
+            onClick={() => {
+              const returnUrl = searchParams.get("returnUrl");
+              const loginUrl = returnUrl
+                ? `/login?returnUrl=${encodeURIComponent(returnUrl)}`
+                : "/login";
+              router.push(loginUrl);
+            }}
           >
             Fazer login
           </span>
